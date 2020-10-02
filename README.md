@@ -1,9 +1,20 @@
 # tcpdump
 
-[![Build Status](https://travis-ci.org/the-tcpdump-group/tcpdump.svg?branch=master)](https://travis-ci.org/the-tcpdump-group/tcpdump)
+## Additions in this fork:
+Added option "-o" which will save all TCP sessions to files. With only one "-o",
+each segment will be saved to a file named with the source address, source port,
+destination address, destination port, with no extras, so for file transfers they
+will end up containing the files as-is. However, "conversations" within the traffic
+will be broken up so they are impossible to follow.
 
-[![Build Status](https://ci.appveyor.com/api/projects/status/github/the-tcpdump-group/tcpdump?branch=master&svg=true)](https://ci.appveyor.com/project/guyharris/tcpdump)
+With multiple "-o" on the command line, the sessions will be saved to files named
+with the (source address, source port) and (destination address, destination port)
+tuples in a deterministic order, so each session will end up in a single file,
+with segment headers. This is useful for following "conversations".
 
+Hans@Liss.pp.se
+
+-------------------------------------------------
 To report a security issue please send an e-mail to security@tcpdump.org.
 
 To report bugs and other problems, contribute patches, request a

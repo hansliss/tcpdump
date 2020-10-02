@@ -193,6 +193,7 @@ static int Dflag;			/* list available devices and exit */
 static char *remote_interfaces_source;	/* list available devices from this source and exit */
 #endif
 
+int dumpSessions = 0;
 /*
  * This is exported because, in some versions of libpcap, if libpcap
  * is built with optimizer debugging code (which is *NOT* the default
@@ -672,7 +673,7 @@ show_remote_devices_and_exit(void)
 #define U_FLAG
 #endif
 
-#define SHORTOPTS "aAb" B_FLAG "c:C:d" D_FLAG "eE:fF:G:hHi:" I_FLAG j_FLAG J_FLAG "KlLm:M:nNOpq" Q_FLAG "r:s:StT:u" U_FLAG "vV:w:W:xXy:Yz:Z:#"
+#define SHORTOPTS "aAb" B_FLAG "c:C:d" D_FLAG "eE:fF:G:hHi:" I_FLAG j_FLAG J_FLAG "KlLm:M:nNoOpq" Q_FLAG "r:s:StT:u" U_FLAG "vV:w:W:xXy:Yz:Z:#"
 
 /*
  * Long options.
@@ -1728,6 +1729,10 @@ main(int argc, char **argv)
 
 		case 'N':
 			++ndo->ndo_Nflag;
+			break;
+
+		case 'o':
+			dumpSessions++;
 			break;
 
 		case 'O':

@@ -66,6 +66,7 @@ static void print_tcp_fastopen_option(netdissect_options *ndo, const u_char *cp,
 
 #define MAX_RST_DATA_LEN	30
 
+extern int dumpSessions;
 
 struct tha {
         nd_ipv4 src;
@@ -171,6 +172,10 @@ tcp_print(netdissect_options *ndo,
         u_int utoval;
         uint16_t magic;
         int rev;
+ 	static char srcbuf[256];
+ 	static char dstbuf[256];
+ 	static char fname[640];
+ 	FILE *dfile;
         const struct ip6_hdr *ip6;
 
         ndo->ndo_protocol = "tcp";
@@ -231,6 +236,24 @@ tcp_print(netdissect_options *ndo,
                          length - hlen, hlen, sizeof(*tp));
                 return;
         }
+
+	if (dumpSessions) {
+	  strcpy(srcbuf, GET_IPADDR_STRING(ip->ip_src));
+	  strcpy(dstbuf, GET_IPADDR_STRING(ip->ip_dst));
+	  
+	  if (dumpSessions == 1 || (strcmp(srcbuf, dstbuf) < 0 || (strcmp(srcbuf, dstbuf) == 0 && sport < dport))) 
+	    sprintf(fname, "TCP_%s.%d_%s.%d.dmp", srcbuf, sport, dstbuf, dport);
+	  else
+	    sprintf(fname, "TCP_%s.%d_%s.%d.dmp", dstbuf, dport, srcbuf, sport);
+	  
+	  if ((length-hlen)>0 && (dfile=fopen(fname, "a")) != NULL) {
+	    if (dumpSessions > 1) {
+	      fprintf(dfile, "\n[+----- %s:%d  -->  %s:%d -----+]\n", srcbuf, sport, dstbuf, dport);
+	    }
+	    fwrite((char *)tp + hlen, 1, length-hlen, dfile);
+	    fclose(dfile);
+	  }
+	}
 
         seq = GET_BE_U_4(tp->th_seq);
         ack = GET_BE_U_4(tp->th_ack);
