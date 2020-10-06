@@ -174,7 +174,7 @@ tcp_print(netdissect_options *ndo,
         int rev;
  	static char srcbuf[256];
  	static char dstbuf[256];
- 	static char fname[640];
+ 	static char fname[2048];
  	FILE *dfile;
         const struct ip6_hdr *ip6;
 
@@ -241,10 +241,12 @@ tcp_print(netdissect_options *ndo,
 	  strcpy(srcbuf, GET_IPADDR_STRING(ip->ip_src));
 	  strcpy(dstbuf, GET_IPADDR_STRING(ip->ip_dst));
 	  
-	  if (dumpSessions == 1 || (strcmp(srcbuf, dstbuf) < 0 || (strcmp(srcbuf, dstbuf) == 0 && sport < dport))) 
-	    sprintf(fname, "TCP_%s.%d_%s.%d.dmp", srcbuf, sport, dstbuf, dport);
-	  else
-	    sprintf(fname, "TCP_%s.%d_%s.%d.dmp", dstbuf, dport, srcbuf, sport);
+	  if (dumpSessions == 1 || (strcmp(srcbuf, dstbuf) < 0 || (strcmp(srcbuf, dstbuf) == 0 && sport < dport))) {
+	    snprintf(fname, sizeof(fname), "TCP_%s.%d_%s.%d.dmp", srcbuf, sport, dstbuf, dport);
+	  } else {
+	    snprintf(fname, sizeof(fname), "TCP_%s.%d_%s.%d.dmp", dstbuf, dport, srcbuf, sport);
+	  }
+	  fname[sizeof(fname)-1] = '\0';
 	  
 	  if ((length-hlen)>0 && (dfile=fopen(fname, "a")) != NULL) {
 	    if (dumpSessions > 1) {
